@@ -46,9 +46,15 @@ const fetchWeather = async (cityName: string) => {
   const weatherData = await response.json();
 
   console.log('weatherData: ', weatherData);
+  // debugger;
 
-  renderCurrentWeather(weatherData[0]);
-  renderForecast(weatherData.slice(1));
+  renderCurrentWeather(weatherData.currentWeather);
+  renderForecast(weatherData.forecast);
+
+  // these two lines of code were breaking everything:
+  // renderCurrentWeather(weatherData[0]);
+  // renderForecast(weatherData.slice(1));
+  
 };
 
 const fetchSearchHistory = async () => {
