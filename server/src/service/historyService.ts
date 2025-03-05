@@ -1,52 +1,36 @@
-import fs from 'node:fs/promises';
 
-class City {
-  name: string;
-  id: string;
-  constructor(name: string, id: string) {
-    this.name = name;
-    this.id = id;
-  }
-}
-
-// TO DO: Complete the HistoryService class
+import fs from "fs"
+import { v4 } from 'uuid';
+//Completed  HistoryService class
 class HistoryService {
-  private async read(): Promise<City[]> {
-    try {
-      const data = await fs.readFile('db/db.json', 'utf-8');
-      const cities: City[] = JSON.parse(data);
-      return cities;
-    } catch (error) {
-      console.error('Error reading search history:', error);
-      throw error; 
+  // Read method that reads from the db.json file
+  async read() {
+    const data = fs.readFileSync('db/db.json', "utf-8")
+    return JSON.parse(data)
+  }
+  // addCity method that adds a city to the db.json file
+  // npm v4 creates a unique id for each city
+  async addCity(city: string) {
+    const currentCities = await this.read()
+    const matchingCity = currentCities.find((item: any) => item.name.toLowerCase() === city.toLowerCase())
+    if (matchingCity) return
+    const newCity = {
+      name: city,
+      id: v4()
     }
+    console.log(newCity)
+    // method that writes the current cities array to the db.json file
+    currentCities.push(newCity)
+    fs.writeFileSync("db/db.json", JSON.stringify(currentCities))
   }
-
-  private async write(cities: City[]): Promise<void> {
-    try {
-      await fs.writeFile('db/db.json', JSON.stringify(cities, null, 2));
-    } catch (error) {
-      console.error('Error writing search history:', error);
-      throw error; // Rethrow the error for handling in the calling function
-    }
-  }
-
-  async getCities(): Promise<City[]> {
-    const cities = await this.read();
-    return cities;
-  }
-
-  async addCity(city: string): Promise<void> {
-    const cities = await this.read();
-    const newCity = new City(city, (cities.length + 1).toString());
-    cities.push(newCity);
-    await this.write(cities);
-  }
-
-  async removeCity(id: string): Promise<void> {
-    const cities = await this.read();
-    const updatedCities = cities.filter((city: City) => city.id !== id);
-    await this.write(updatedCities);
+  //removeCity method that removes a city from the db.json file
+  async removeCity(id: string) {
+    const currentCities = await this.read();
+    const index = currentCities.findIndex((item: any) => item.id === id);
+    //remove the city with that id from the array
+    currentCities.splice(index, 1);
+    //writes the existing cities back in the db.json
+    fs.writeFileSync("db/db.json", JSON.stringify(currentCities));
   }
 }
 

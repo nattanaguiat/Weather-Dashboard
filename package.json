@@ -6,7 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "npm run client:build && npm run server",
-    "start:dev": "concurrently \"npm run server:dev\" \"wait-on tcp:3001 && npm run client:dev\"",
+    "dev": "concurrently \"npm run server:dev\" \"wait-on tcp:3001 && npm run client:dev\"",
     "server": "cd server && npm start",
     "server:dev": "cd server && npm run dev",
     "install": "cd server && npm i && cd ../client && npm i",
@@ -20,11 +20,13 @@
   "license": "ISC",
   "devDependencies": {
     "concurrently": "^8.2.2",
+    "gh-pages": "^6.3.0",
     "nodemon": "^3.1.0",
     "wait-on": "^7.2.0"
   },
   "dependencies": {
     "@fortawesome/fontawesome-free": "^6.5.2",
-    "bootstrap": "^5.3.3"
+    "bootstrap": "^5.3.3",
+    "uuid": "^11.0.3"
   }
 }

@@ -1,43 +1,39 @@
-import { Router, type Request, type Response } from 'express';
+import { Router } from 'express';
 const router = Router();
 
 import HistoryService from '../../service/historyService.js';
 import WeatherService from '../../service/weatherService.js';
 
-router.post('/', async (req: Request, res: Response) => {
-  try {
+//POST Request with city name to retrieve weather data
+router.post('/', async (req, res) => {
+  console.log(req.body)
 
-    const { cityName } = req.body;
-    console.log('Received request for city:', cityName);
+  const weatherService = new WeatherService(req.body.cityName)
 
-    const weather = new WeatherService(cityName);
-    const weatherData = await weather.getWeatherForCity(cityName);
+  weatherService.getWeatherForCity(req.body.cityName)
+    .then(data => {
+      HistoryService.addCity(req.body.cityName)
+      return res.json(data)
+    })
 
-    console.log('Sending weather data:', weatherData);
+})
 
-    res.json({
-      currentWeather: weatherData.currentWeather,
-      forecast: weatherData.forecastArray
-    });
-
-    await HistoryService.addCity(cityName);
-
-  } catch (error) {
-    console.error('Weather API Error:', error);
-    res.status(500).json({ 
-      error: error instanceof Error ? error.message : 'An unknown error occurred' 
-    });
-  }
+// GET search history
+router.get('/history', async (_req, res) => {
+  HistoryService.read()
+    .then(data => {
+      console.log(data)
+      return res.json(data)
+    })
 });
 
-router.get('/history', async (_req: Request, res: Response) => {
-  const history = await HistoryService.getCities();
-  res.json(history);
-});
-
+// * BONUS: DELETE city from search history
 router.delete('/history/:id', async (req, res) => {
-  await HistoryService.removeCity(req.params.id);
-  res.status(200).send('City removed');
-});
+  const {id}= req.params;
+  await HistoryService.removeCity(id);
+  const response = await HistoryService.read();
+  return res.json(response);
+})
+
 
 export default router;
