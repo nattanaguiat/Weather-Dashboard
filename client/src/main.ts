@@ -48,12 +48,11 @@ const fetchWeather = async (cityName: string) => {
   console.log('weatherData: ', weatherData);
   // debugger;
 
-  renderCurrentWeather(weatherData.currentWeather);
-  renderForecast(weatherData.forecast);
+  // renderCurrentWeather(weatherData.currentWeather);
+  // renderForecast(weatherData.forecast);
 
-  // these two lines of code were breaking everything:
-  // renderCurrentWeather(weatherData[0]);
-  // renderForecast(weatherData.slice(1));
+  renderCurrentWeather(weatherData[0]);
+  renderForecast(weatherData.slice(1));
   
 };
 
